@@ -14,9 +14,10 @@
     p,.p{background:gainsboro; margin:20px; padding:20px; font-size:13px;}
     textarea{width:95vw; height:30vh;}
     pre{background:aliceblue; padding:20px;}
-    button{background:#69b5ce; border-color:#303030;}
+    button{background:#69b5ce; border-color:#303030; font-weight:bold; border-width:thin;}
     .spacer{height:20px;}
     .hidden{display:none;}
+    .label{font-weight:bold;}
   </style>
 </head>
 
@@ -54,24 +55,24 @@
     <h3>Current</h3>
     <h4>Clinical</h4>
     <div>
-      <p>patient id: <span id='patient_id'></span></p>
-      <p>encounter id: <span id='encounter_id'></span></p>
-      <p>fhirUser: <span id='fhirUser'></span></p>
+      <p><span class="label">patient id:</span> <span id='patient_id'></span></p>
+      <p><span class="label">encounter id:</span> <span id='encounter_id'></span></p>
+      <p><span class="label">fhirUser:</span> <span id='fhirUser'></span></p>
     </div>
     <h4>State</h4>
     <div>
-      <p>authorizeUri: <span id='state_authorizeUri'></span></p>
-      <p>tokenUri: <span id='state_tokenUri'></span></p>
-      <p>clientId: <span id='state_clientId'></span></p>
-      <p>key: <span id='state_key'></span></p>
-      <p>redirectUri: <span id='state_redirectUri'></span></p>
-      <p>registrationUri: <span id='state_registrationUri'></span></p>
-      <p>scope: <span id='state_scope'></span></p>
-      <p>serverUrl: <span id='state_serverUrl'></span></p>
-      <p>smart_style_url: <span id='state_smart_style_url'></span></p>
-      <p>tenant: <span id='state_tenant'></span></p>
-      <p>username: <span id='state_username'></span></p>
-      <p>access token: <span id='state_access_token'></span></p>
+      <p><span class="label">authorizeUri:</span> <span id='state_authorizeUri'></span></p>
+      <p><span class="label">tokenUri:</span> <span id='state_tokenUri'></span></p>
+      <p><span class="label">clientId:</span> <span id='state_clientId'></span></p>
+      <p><span class="label">key:</span> <span id='state_key'></span></p>
+      <p><span class="label">redirectUri:</span> <span id='state_redirectUri'></span></p>
+      <p><span class="label">registrationUri:</span> <span id='state_registrationUri'></span></p>
+      <p><span class="label">scope:</span> <span id='state_scope'></span></p>
+      <p><span class="label">serverUrl:</span> <span id='state_serverUrl'></span></p>
+      <p><span class="label">smart_style_url:</span> <span id='state_smart_style_url'></span></p>
+      <p><span class="label">tenant:</span> <span id='state_tenant'></span></p>
+      <p><span class="label">username:</span> <span id='state_username'></span></p>
+      <p><span class="label">access token:</span> <span id='state_access_token'></span></p>
       <div class='p'>
         <button id="raw_button" type="button" style="border: solid; padding: .5em;">Raw</button>
         <div id="raw_content" style="display:none; padding:0 2em; overflow:hidden;">
@@ -81,14 +82,14 @@
     </div>
     <h4>Params</h4>
     <div>
-      <p>code: <span id='code_param'></span></p>
-      <p>state: <span id='state_param'></span></p>
-      <p>iss: <span id='iss_param'></span></p>
-      <p>launch: <span id='launch_param'></span></p>
-      <p>client id: <span id='client_id'></span></p>
-      <p>requested scope: <span id='scope'></span></p>
-      <p>launch_uri: <span id='launch_uri'></span></p>
-      <p>redirect_uri: <span id='redirect_uri'></span></p>
+      <p><span class="label">code:</span> <span id='code_param'></span></p>
+      <p><span class="label">state:</span> <span id='state_param'></span></p>
+      <p><span class="label">iss:</span> <span id='iss_param'></span></p>
+      <p><span class="label">launch:</span> <span id='launch_param'></span></p>
+      <p><span class="label">client id:</span> <span id='client_id'></span></p>
+      <p><span class="label">requested scope:</span> <span id='scope'></span></p>
+      <p><span class="label">launch_uri:</span> <span id='launch_uri'></span></p>
+      <p><span class="label">redirect_uri:</span> <span id='redirect_uri'></span></p>
     </div>
   </div>
 
