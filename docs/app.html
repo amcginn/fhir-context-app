@@ -133,8 +133,15 @@
       document.getElementById('state_access_token').innerText = (state.tokenResponse.access_token && state.tokenResponse.access_token.length > 0 ? 'it\'s here :)' : 'missing!');
 
       let state_copy = JSON.parse(JSON.stringify(state));
-      state_copy.tokenResponse.access_token = 'REDACTED';
+      if (state_copy.tokenResponse.access_token) {
+        state_copy.tokenResponse.access_token = 'REDACTED';
+      }
+      if (state_copy.tokenResponse.id_token) {
       state_copy.tokenResponse.id_token = 'REDACTED';
+      }
+      if (state_copy.tokenResponse.access_token) {
+        state_copy.tokenResponse.refresh_token = 'REDACTED';
+      }
       document.getElementById('raw_state').innerText = JSON.stringify(state_copy, null, 2);
     }
   </script>
