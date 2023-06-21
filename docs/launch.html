@@ -30,7 +30,7 @@
     sessionStorage.setItem("iss_param", iss_param);
     sessionStorage.setItem("launch_param", launch_param);
     sessionStorage.setItem("client_id", "11d9d61d-1d47-44a1-983a-56e70996298c");
-    sessionStorage.setItem("scope", "patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read openid launch");
+    sessionStorage.setItem("scope", "patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read openid launch online_access");
     sessionStorage.setItem("launch_uri", document.location.href)
     sessionStorage.setItem("redirect_uri", "https://amcginn.github.io/fhir-context-app/app.html");
     
@@ -40,7 +40,7 @@
     console.log('iss_param: ' + iss_param);
     console.log('launch_param: ' + launch_param);
     console.log('client_id: 11d9d61d-1d47-44a1-983a-56e70996298c');
-    console.log('scope: patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch');
+    console.log('scope: patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch online_access');
     console.log('redirect_uri: https://amcginn.github.io/fhir-context-app/app.html')
   </script>
   <script>
@@ -49,7 +49,7 @@
 	<script>
 		FHIR.oauth2.authorize({
       'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
-      'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch',
+      'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch online_access',
       'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
     });
   </script>
