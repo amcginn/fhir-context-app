@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html hidden>
+<head>
+	<script src="dist/fhir-client-v2.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+
+  <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/cerner/cerner-smart-embeddable-lib@v1.5.0/dist/css/cerner-smart-embeddable-lib-1.5.0.min.css'>
+  <style>
+    p,.p{background:lightgray; margin:1em; padding:1em;}
+    textarea{width:95vw; height:30vh; }
+    .spacer{height:50px;}
+    .hidden{display:none;}
+  </style>
+</head>
+
+<body>
+  <div id='newNote_section' class='hidden'>
+    <h2>New Note</h2>
+    <div id="noteCreation">
+      <textarea id="ehrNote">This is a start to your note.</textarea>
+      <button id="submit">Click to Save</button>
+    </div>
+  </div>
+
+  <div id='debug_section'>
+    <hr>
+    <h3>Debug Area</h3>
+    <p id="debug"></p>
+  </div>
+
+  <div id='existingNotes_section' class=''>
+    <hr>
+  
+    <h2>Existing Notes</h2>
+    <div id="documents">
+      <h3>Documents from yesterday and today</h3>
+      <p v-for="item in $data.entry" v-html="item.resource.text.div" v-on:click="getBinary(item.resource.content[0].attachment.url, item.resource.content[0].attachment.contentType)">
+      </p>
+    </div>
+  </div>
+    
+  <hr>
+    
+  <div class='spacer'></div>
+  <div id='context_section'>
+    <h2>Context</h2>
+    <h3>Current</h3>
+    <h4>Clinical</h4>
+    <div>
+      <p>patient id: <span id='patient_id'></span></p>
+      <p>encounter id: <span id='encounter_id'></span></p>
+      <p>fhirUser: <span id='fhirUser'></span></p>
+    </div>
+    <h4>State</h4>
+    <div>
+      <p>authorizeUri: <span id='state_authorizeUri'></span></p>
+      <p>tokenUri: <span id='state_tokenUri'></span></p>
+      <p>clientId: <span id='state_clientId'></span></p>
+      <p>key: <span id='state_key'></span></p>
+      <p>redirectUri: <span id='state_redirectUri'></span></p>
+      <p>registrationUri: <span id='state_registrationUri'></span></p>
+      <p>scope: <span id='state_scope'></span></p>
+      <p>serverUrl: <span id='state_serverUrl'></span></p>
+      <p>smart_style_url: <span id='state_smart_style_url'></span></p>
+      <p>tenant: <span id='state_tenant'></span></p>
+      <p>username: <span id='state_username'></span></p>
+      <p>access token: <span id='state_access_token'></span></p>
+      <div class='p'>
+        <button id="raw_button" type="button" style="border: solid; padding: .5em;">Raw</button>
+        <div id="raw_content" style="display:none; padding:0 2em; overflow:hidden;">
+          <pre id='raw_state'></pre>
+        </div>
+      </div>
+    </div>
+    <h4>Params</h4>
+    <div>
+      <p>code: <span id='code_param'></span></p>
+      <p>state: <span id='state_param'></span></p>
+      <p>iss: <span id='iss_param'></span></p>
+      <p>launch: <span id='launch_param'></span></p>
+      <p>client id: <span id='client_id'></span></p>
+      <p>requested scope: <span id='scope'></span></p>
+      <p>launch_uri: <span id='launch_uri'></span></p>
+      <p>redirect_uri: <span id='redirect_uri'></span></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('iss_param').innerText = sessionStorage.getItem("iss_param");
+    document.getElementById('launch_param').innerText = sessionStorage.getItem("launch_param");
+    document.getElementById('client_id').innerText = sessionStorage.getItem("client_id");
+    document.getElementById('scope').innerText = sessionStorage.getItem("scope");
+    document.getElementById('launch_uri').innerText = sessionStorage.getItem("launch_uri");
+    document.getElementById('redirect_uri').innerText = sessionStorage.getItem("redirect_uri");
+
+    let params = new URLSearchParams(document.location.search);
+    let code_param = params.get('code');
+    sessionStorage.setItem("code_param", code_param);
+    document.getElementById('code_param').innerText = code_param;
+
+    let state_param = params.get('state');
+    sessionStorage.setItem("state_param", state_param);
+    document.getElementById('state_param').innerText = state_param;
+  </script>
+  <script>
+    function populateState(smart) {
+      // populate clinical (patient, encounter, user)
+      document.getElementById('patient_id').innerText = smart.patient.id;
+      document.getElementById('encounter_id').innerText = smart.encounter.id;
+      document.getElementById('fhirUser').innerText = smart.user.fhirUser;
+      
+      // pull/populate state values
+      let state = smart.state;
+      document.getElementById('state_authorizeUri').innerText = state.authorizeUri;
+      document.getElementById('state_tokenUri').innerText = state.tokenUri;
+      document.getElementById('state_clientId').innerText = state.clientId;
+      document.getElementById('state_key').innerText = state.key;
+      document.getElementById('state_redirectUri').innerText = state.redirectUri;
+      document.getElementById('state_registrationUri').innerText = state.registrationUri;
+      document.getElementById('state_scope').innerText = state.tokenResponse.scope;
+      document.getElementById('state_serverUrl').innerText = state.serverUrl;
+      document.getElementById('state_smart_style_url').innerText = state.tokenResponse.smart_style_url;
+      document.getElementById('state_tenant').innerText = state.tokenResponse.tenant;
+      document.getElementById('state_username').innerText = state.tokenResponse.username;
+      document.getElementById('state_access_token').innerText = (state.tokenResponse.access_token && state.tokenResponse.access_token.length > 0 ? 'it\'s here :)' : 'missing!');
+
+      let state_copy = JSON.parse(JSON.stringify(state));
+      state_copy.tokenResponse.access_token = 'REDACTED';
+      state_copy.tokenResponse.id_token = 'REDACTED';
+      document.getElementById('raw_state').innerText = JSON.stringify(state_copy, null, 2);
+    }
+  </script>
+	<script>
+
+		var myApp = {}
+
+    FHIR.oauth2.ready()
+    .then(function(client){ 
+      myApp.smart = client
+      
+      console.log(myApp);
+      populateState(myApp.smart)
+      
+      doRequests()
+    })
+
+    async function doRequests(){
+
+      var docs = await fetch(myApp.smart.state.serverUrl+"/DocumentReference?patient="+myApp.smart.patient.id+"&created=ge"+moment().subtract(1,"days").format("YYYY-MM-DD")+"&created=le"+moment().add(1,"days").format("YYYY-MM-DD"),{
+        headers:{  
+          "Accept":"application/json+fhir",
+          "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+        }
+        }).then(function(data){
+          if (!data.ok) {
+            console.log()
+            console.log(data.headers.get('X-Request-Id'));
+          }
+          return data
+      })
+
+      var response = await docs.json()
+
+      console.log(response)
+
+      myApp.vue = new Vue({
+        el:"#documents",
+        data: response,
+        methods: {
+          getBinary: function(url, contentType){
+            var binary = fetch(url, {
+              headers:{  
+                "Accept":"application/json+fhir",
+                "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+              }
+              }).then(function(data){
+                return data.json()
+              }).then(function(data){
+
+               var base64str = data.content;
+                // decode base64 string, remove space for IE compatibility
+                var binary = atob(base64str.replace(/\s/g, ''));
+                const byteNumbers = new Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                  byteNumbers[i] = binary.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+
+                // create the blob object with content-type "application/pdf"
+                var blob = new Blob( [byteArray], { type: "application/pdf" });
+                var url = URL.createObjectURL(blob);
+                console.log(url)
+
+                let pdfWindow = window.open(url)
+
+            })
+
+          }
+        }
+      })
+
+    }
+
+  $(document).ready(function(){
+    $("body").on("click", "#submit", function(){
+      createNote()
+    })
+  })
+
+  function createNote(){
+    var text = $("#ehrNote").text()
+
+    var note = '<!DOCTYPE html>'
+    note += '<html lang="en">'
+    note += '<head>'
+    note += '<title>Test</title>'
+    note += '</head>'
+    note += '<body>'
+    note += '<h2>Patient Education</h2>'
+    note += '<p>'+text+'</p>'
+    note += '</body>'
+    note += '</html>'; 
+
+    console.log(note)
+    
+    $("#submit").prop("disabled",true)
+
+    var docCode = [{"system": "http://loinc.org","code": "11506-3"}]
+//      var docCode = [{"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/72","code": "63293819"}]
+    $.ajax({
+      url: myApp.smart.state.serverUrl+"/DocumentReference",
+      type: "POST",
+      data: JSON.stringify({
+        subject: {"reference": "Patient/"+myApp.smart.patient.id}, 
+        resourceType: "DocumentReference",
+        content:[{
+          attachment:{
+            contentType: "application/xhtml+xml;charset=utf-8",
+            data: btoa(note) 
+              } 
+            }], 
+        description:"Some Title",
+        type:{
+            coding: docCode
+            }, 
+        context: { 
+            "encounter": { "reference": "Encounter/"+myApp.smart.encounter.id }
+            }, 
+        indexed: moment().format(),  //"2015-11-18T18:00:00Z" //ISO 8601 format
+        status: "current", 
+        docStatus: { 
+              "coding": [ { "system": "http://hl7.org/fhir/composition-status", "code": "final" } ]
+          } 
+      }),
+      crossDomain: true,
+      beforeSend: function(xhr){
+        xhr.setRequestHeader('Content-Type', 'application/json+fhir'); 
+        xhr.setRequestHeader('Authorization', 'Bearer '+myApp.smart.state.tokenResponse.access_token)     
+      },
+      success:function(data){ alert(JSON.stringify(data))},
+      complete:function(jqXHR, xhr){$("#debug").append("complete: "+jqXHR.getAllResponseHeaders())},
+      error:function(data, status, xhr){ 
+        console.log(data);
+        console.log(xhr);
+      },    
+    })
+  }
+
+	</script>
+  <script>
+  function toggleRawState() {
+    var raw_button = document.getElementById("raw_button");
+    if (raw_content.style.display === "block") {
+      raw_content.style.display = "none";
+    } else {
+      raw_content.style.display = "block";
+    }
+  }
+  
+  document.getElementById("raw_button").addEventListener('click', toggleRawState);
+  </script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/cerner/cerner-smart-embeddable-lib@v1.5.0/dist/js/cerner-smart-embeddable-lib-1.5.0.min.js"></script>
+</body>
+
+</html>
