@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html hidden>
 <head>
-	<script src="dist/fhir-client-v2.js"></script>
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="dist/fhir-client-v2.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 
   <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/cerner/cerner-smart-embeddable-lib@v1.5.0/dist/css/cerner-smart-embeddable-lib-1.5.0.min.css'>
   <style>
     p,.p{background:lightgray; margin:1em; padding:1em;}
-    textarea{width:95vw; height:30vh; }
+    textarea{width:95vw; height:30vh;}
+    pre{background:aliceblue;}
     .spacer{height:50px;}
     .hidden{display:none;}
   </style>
@@ -132,9 +133,9 @@
       document.getElementById('raw_state').innerText = JSON.stringify(state_copy, null, 2);
     }
   </script>
-	<script>
+  <script>
 
-		var myApp = {}
+  var myApp = {}
 
     FHIR.oauth2.ready()
     .then(function(client){ 
@@ -200,7 +201,6 @@
           }
         }
       })
-
     }
 
   $(document).ready(function(){
@@ -268,7 +268,7 @@
     })
   }
 
-	</script>
+  </script>
   <script>
   function toggleRawState() {
     var raw_button = document.getElementById("raw_button");
