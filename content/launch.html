@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html hidden>
+
+<head>
+	<script src='dist/fhir-client-v2.js'></script>
+  <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/cerner/cerner-smart-embeddable-lib@v1.5.0/dist/css/cerner-smart-embeddable-lib-1.5.0.min.css'>
+</head>
+
+<body>
+	<p>Hello, I am the SMART launch URI page!</p>
+  <p>iss: <span id='iss_param'></span></p>
+  <p>launch: <span id='launch_param'></span></p>
+  <p />
+  <p>
+    <span>Auth request:</span>
+    <pre>
+      FHIR.oauth2.authorize({
+        'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
+        'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read openid launch',
+        'redirect_uri': 'https://docref--aaronmcginn.repl.co/app.html'
+      });
+    </pre>
+  </p>
+
+  <script>
+    let params = new URLSearchParams(document.location.search);
+    let iss_param = params.get('iss');
+    let launch_param = params.get('launch');
+    
+    sessionStorage.setItem("iss_param", iss_param);
+    sessionStorage.setItem("launch_param", launch_param);
+    sessionStorage.setItem("client_id", "11d9d61d-1d47-44a1-983a-56e70996298c");
+    sessionStorage.setItem("scope", "patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read openid launch");
+    sessionStorage.setItem("launch_uri", document.location.href)
+    sessionStorage.setItem("redirect_uri", "https://docref--aaronmcginn.repl.co/app.html");
+    
+    document.getElementById('iss_param').innerText = iss_param;
+    document.getElementById('launch_param').innerText = launch_param;
+
+    console.log('iss_param: ' + iss_param);
+    console.log('launch_param: ' + launch_param);
+    console.log('client_id: 11d9d61d-1d47-44a1-983a-56e70996298c');
+    console.log('scope: patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch');
+    console.log('redirect_uri: https://docref--aaronmcginn.repl.co/app.html')
+  </script>
+  <script>
+    console.log(JSON.stringify(FHIR.oauth2));
+  </script>
+	<script>
+		FHIR.oauth2.authorize({
+      'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
+      'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch',
+      'redirect_uri': 'https://docref--aaronmcginn.repl.co/app.html'
+    });
+	</script>
+
+  <script type="text/javascript" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cerner/cerner-smart-embeddable-lib@v1.5.0/dist/js/cerner-smart-embeddable-lib-1.5.0.min.js"></script>
+</body>
+
+</html>
