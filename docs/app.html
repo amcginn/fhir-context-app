@@ -19,6 +19,16 @@
     .hidden{display:none;}
     .label{font-weight:bold;}
   </style>
+  <script>
+    let params = new URLSearchParams(document.location.search);
+    let error_uri = params.get('error_uri');
+    if (error_uri) {
+      console.log('error: ' + params.get('error'));
+      console.log('error_uri: ' + error_uri);
+
+      document.location.href = error_uri;
+    }
+  </script>
 </head>
 
 <body>
