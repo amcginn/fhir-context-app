@@ -27,10 +27,9 @@
     let iss_param = params.get('iss');
     let launch_param = params.get('launch');
 
-    let generated_launch_code = false;
+    let create_launch_context = false;
     if (!launch_param) {
-      generated_launch_code = true;
-      launch_param = self.crypto.randomUUID();
+      create_launch_context = true;
     }
     
     sessionStorage.setItem("iss_param", iss_param);
@@ -52,10 +51,11 @@
   <script>
     console.log(JSON.stringify(FHIR.oauth2));
   </script>
-	<script>
-		FHIR.oauth2.authorize({
+  <script>
+    let launch_scope = (create_launch_context) ? 'launch/patient' : 'launch'
+    FHIR.oauth2.authorize({
       'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
-      'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch online_access',
+      'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access ' + launch_scope,
       'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
     });
   </script>
