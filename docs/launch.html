@@ -26,6 +26,12 @@
     let params = new URLSearchParams(document.location.search);
     let iss_param = params.get('iss');
     let launch_param = params.get('launch');
+
+    let generated_launch_code = false;
+    if (!launch_param) {
+      generated_launch_code = true;
+      launch_param = self.crypto.randomUUID();
+    }
     
     sessionStorage.setItem("iss_param", iss_param);
     sessionStorage.setItem("launch_param", launch_param);
@@ -35,10 +41,10 @@
     sessionStorage.setItem("redirect_uri", "https://amcginn.github.io/fhir-context-app/app.html");
     
     document.getElementById('iss_param').innerText = iss_param;
-    document.getElementById('launch_param').innerText = launch_param;
+    document.getElementById('launch_param').innerText = launch_param + ' (generated: ' + generated_launch_code + ')';
 
     console.log('iss_param: ' + iss_param);
-    console.log('launch_param: ' + launch_param);
+    console.log('launch_param: ' + launch_param + ' (generated: ' + generated_launch_code + ')');
     console.log('client_id: 11d9d61d-1d47-44a1-983a-56e70996298c');
     console.log('scope: patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch online_access');
     console.log('redirect_uri: https://amcginn.github.io/fhir-context-app/app.html')
