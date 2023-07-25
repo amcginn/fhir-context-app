@@ -4,7 +4,7 @@
 </head>
 
 <body>
-  <a id="standalone-url" href="launch.html?iss=https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d&patient_id=">If you want to login outside the EHR, login here!</a>
+  <a id="standalone-url" href="">If you want to login outside the EHR, login here!</a>
   <p>
     <div>
       <span>Current location: </span><span id="current_url"></span><br/>
@@ -29,10 +29,11 @@
   document.getElementById('current_url').innerText = window.location.href
 </script>
   <script>
+    const launch_server_url = 'https://smart.cerner.com/smart/ec2458f2-1e24-41c8-b71b-0e701af7583d/apps/ae713322-7206-45cd-be6f-08f01fdcedb6/?PAT_PersonId='
+    
     function changePatient(patient_id) {
       let standalone_url_element = document.getElementById('standalone-url');
-      let url_no_pt = standalone_url_element.href.substring(0, standalone_url_element.href.lastIndexOf('=') + 1);
-      standalone_url_element.href = url_no_pt + patient_id;
+      standalone_url_element.href = launch_server_url + patient_id;
       console.log('patient changed to ' + patient_id);
     }
     
