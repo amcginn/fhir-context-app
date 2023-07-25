@@ -59,13 +59,13 @@
         'scope': '',
         'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
       }
-    let scope_value = 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access';
+    let scope_value = ;
     if (patient_id) {
       auth_req_info['patientId'] = patient_id;
+      'user/Patient.read user/DocumentReference.read user/DocumentReference.write user/Binary.read user/AllergyIntolerance.write openid fhirUser online_access'
     } else {
-      scope_value += ' launch';
+      auth_req_info['scope'] = 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch';
     }
-    auth_req_info['scope'] = scope_value;
     
     FHIR.oauth2.authorize(auth_req_info);
   </script>
