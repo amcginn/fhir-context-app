@@ -54,8 +54,6 @@
     console.log(JSON.stringify(FHIR.oauth2));
   </script>
   <script>
-    let params = new URLSearchParams(document.location.search);
-    let patient_id = params.get('patient_id');
     let auth_req_info = {
         'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
         'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch',
