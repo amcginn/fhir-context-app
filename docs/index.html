@@ -4,13 +4,46 @@
 </head>
 
 <body>
-	<a href="launch.html?iss=https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d&aud=">If you want to login outside the EHR, login here!</a>
+  <a id="standalone-url" href="launch.html?iss=https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d&patient_id=">If you want to login outside the EHR, login here!</a>
   <p>
     <div>
       <span>Current location: </span><span id="current_url"></span><br/>
       <span>No current context</span>
     </div>
   </p>
+  <p>
+    <div>
+      <label for="pt-select">Choose a patient:</label>
+      <select name="pets" id="pt-select">
+        <option value="12724066" selected>Nancy SMART</option>
+        <option value="12724067">Joe SMART</option>
+        <option value="12724065">Wilma SMART</option>
+        <option value="12724071">Valerie SMART</option>
+        <option value="12724070">Frederick SMART</option>
+        <option value="490052523">Tim Peters</option>
+    </select>
+    </div>
+    12724066
+  </p>
 </body>
-<script>document.getElementById('current_url').innerText = window.location.href</script>
+<script>
+  document.getElementById('current_url').innerText = window.location.href
+  var test_patient = document.getElementById("pt-select").value;
+  document.getElementById('standalone-url').innerText += test_patient;
+</script>
+  <script>
+    function changePatient(patient_id) {
+      let standalone_url_element = document.getElementById('standalone-url');
+      let url_no_pt = standalone_url_element.innerText.substring(0, standalone_url_element.lastIndexOf('='));
+      standalone_url_element.innerText = url_no_pt + patient_id;
+    }
+    
+    const el = document.getElementById("pt-select");
+    el.addEventListener("change",
+      function () {
+        var test_patient = document.getElementById("pt-select").value;
+        changePatient(test_patient);
+      }
+);
+  </script>
 </html>
