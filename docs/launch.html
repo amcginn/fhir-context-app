@@ -27,7 +27,6 @@
     let params = new URLSearchParams(document.location.search);
     let iss_param = params.get('iss');
     let launch_param = params.get('launch');
-    let patient_id = params.get('patient_id');
     
     sessionStorage.setItem("iss_param", iss_param);
     sessionStorage.setItem("launch_param", launch_param);
@@ -45,10 +44,6 @@
     console.log('scope: patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser launch online_access');
     console.log('redirect_uri: https://amcginn.github.io/fhir-context-app/app.html')
     
-    if (patient_id) {
-      document.getElementById('launch_param').innerText = 'selected patient_id: ' + patient_id;
-      console.log('selected patient_id: ' + patient_id);
-    }
   </script>
   <script>
     console.log(JSON.stringify(FHIR.oauth2));
@@ -56,16 +51,9 @@
   <script>
     let auth_req_info = {
         'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
-        'scope': '',
+        'scope': 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch',
         'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
       }
-    
-    if (patient_id) {
-      auth_req_info['patientId'] = patient_id;
-      auth_req_info['scope'] = 'user/Patient.read user/DocumentReference.read user/DocumentReference.write user/Binary.read user/AllergyIntolerance.write openid fhirUser online_access'
-    } else {
-      auth_req_info['scope'] = 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch';
-    }
     
     FHIR.oauth2.authorize(auth_req_info);
   </script>
