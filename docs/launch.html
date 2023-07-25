@@ -20,7 +20,7 @@
       'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
     });
     </pre>
-    <span id='patient_id'></span>
+    <p><span id='patient_id'></span></p>
   </p>
 
   <script>
@@ -56,12 +56,17 @@
   <script>
     let auth_req_info = {
         'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
-        'scope':  'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch',
+        'scope': '',
         'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
       }
+    let scope_value = 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access';
     if (patient_id) {
       auth_req_info['patientId'] = patient_id;
+    } else {
+      scope_value += ' launch';
     }
+    auth_req_info['scope'] = scope_value;
+    
     FHIR.oauth2.authorize(auth_req_info);
   </script>
 
