@@ -34,7 +34,7 @@
   <script>
     function changePatient(patient_id) {
       let standalone_url_element = document.getElementById('standalone-url');
-      let url_no_pt = standalone_url_element.href.substring(0, standalone_url_element.lastIndexOf('='));
+      let url_no_pt = standalone_url_element.href.substring(0, standalone_url_element.href.lastIndexOf('='));
       standalone_url_element.href = url_no_pt + patient_id;
     }
     
