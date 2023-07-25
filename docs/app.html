@@ -40,13 +40,13 @@
     </div>
   </div>
 
-  <div id='debug_section'>
+  <div id='debug_section' class='hidden>
     <hr>
     <h3>Debug Area</h3>
     <p id="debug"></p>
   </div>
 
-  <div id='existingNotes_section' class=''>
+  <div id='existingNotes_section' class='hidden'>
     <hr>
   
     <h2>Existing Notes</h2>
@@ -111,7 +111,6 @@
     document.getElementById('launch_uri').innerText = sessionStorage.getItem("launch_uri");
     document.getElementById('redirect_uri').innerText = sessionStorage.getItem("redirect_uri");
 
-    let params = new URLSearchParams(document.location.search);
     let code_param = params.get('code');
     sessionStorage.setItem("code_param", code_param);
     document.getElementById('code_param').innerText = code_param;
@@ -171,6 +170,11 @@
 
     async function doRequests(){
 
+      let patient_resource = myApp.smart.patient.read();
+      let practitioner_resource = myApp.smart.user.read()
+      console.log(patient_resource);
+      console.log(practitioner_resource);
+      
       var docs = await fetch(myApp.smart.state.serverUrl+"/DocumentReference?patient="+myApp.smart.patient.id+"&created=ge"+moment().subtract(1,"days").format("YYYY-MM-DD")+"&created=le"+moment().add(1,"days").format("YYYY-MM-DD"),{
         headers:{  
           "Accept":"application/json+fhir",
@@ -179,7 +183,7 @@
         }).then(function(data){
           if (!data.ok) {
             console.log()
-            console.log(data.headers.get('X-Request-Id'));
+            console.log('/DocumentReference x-request-id: ' + data.headers.get('X-Request-Id'));
           }
           return data
       })
