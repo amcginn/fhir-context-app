@@ -29,7 +29,7 @@
 <script>
   document.getElementById('current_url').innerText = window.location.href
   var test_patient = document.getElementById("pt-select").value;
-  document.getElementById('standalone-url').innerText += test_patient;
+  document.getElementById('standalone-url').href += test_patient;
 </script>
   <script>
     function changePatient(patient_id) {
