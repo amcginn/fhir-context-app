@@ -196,12 +196,11 @@
     console.log('pt: ' + patient_resource);
     console.log('prsnl: ' + practitioner_resource);
 
-    let docRefParams = new URLSearchParams();
-    docRefParams.set("created","ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString());
-    docRefParams.set("created", "le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
+    let docRefParams = "created=ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() +
+    "created=le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
 
     let docs = await myApp.smart.request("DocumentReference?patient=" + myApp.smart.patient.id + '&' +
-                                      encodeURI(docRefParams.toString()), {includeResponse: true})
+                                      encodeURI(docRefParams), { includeResponse: true })
       .then(function(response){
         let data = response.body;
         if (!response.response.ok) {
