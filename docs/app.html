@@ -71,7 +71,7 @@
       </p>
       <p><span class="label">encounter id:</span> <span id='encounter_id'></span></p>
       <p>
-        <span class="label">fhirUser:</span> <span class="practitioner-demo" style="display: none">ID: <span id='fhirUser'></span> (<span class="practitioner-name"></span>)</span><br>
+        <span class="label">fhirUser:</span> <span id='fhirUser'></span> <span class="practitioner-demo" style="display: none">(<span class="practitioner-name"></span>)</span><br>
         <span class="label">X-Request-Id:</span> <span id="practitioner-request-id"></span>
       </p>
 
@@ -187,10 +187,9 @@
 
     let practitioner_resource = myApp.smart.user.read({includeResponse: true}).then(function(response) {
       document.getElementById('practitioner-request-id').innerText = response.response.headers.get('X-Request-Id');
-      return response.body;
-    }).then(function(practitioner) {
-      document.getElementsByClassName('practitioner-name')[0].innerText = practitioner.name[0].text;
+      document.getElementsByClassName('practitioner-name')[0].innerText = response.body.name[0].text;
       document.getElementsByClassName('practitioner-demo')[0].style.display = 'block';
+      return response.body;
     })
 
     console.log('pt: ' + patient_resource.toString());
