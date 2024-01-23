@@ -187,14 +187,14 @@
 
     let practitioner_resource = myApp.smart.user.read({includeResponse: true}).then(function(response) {
       document.getElementById('practitioner-request-id').innerText = response.response.headers.get('X-Request-Id');
-      document.getElementsByClassName('practitioner-name')[0].innerText = response.body.name[0].text;
-      document.getElementsByClassName('practitioner-demo')[0].style.display = 'block';
-
       return response.body;
+    }).then(function(practitioner) {
+      document.getElementsByClassName('practitioner-name')[0].innerText = practitioner.name[0].text;
+      document.getElementsByClassName('practitioner-demo')[0].style.display = 'block';
     })
 
-    console.log('pt: ' + patient_resource);
-    console.log('prsnl: ' + practitioner_resource);
+    console.log('pt: ' + patient_resource.toString());
+    console.log('prsnl: ' + practitioner_resource.toString());
 
     let docRefParams = "created=ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() +
     "&created=le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
@@ -209,9 +209,9 @@
         }
         return data
       }).then(function(docs){
-        let response = docs.json();
+        let response = docs
 
-        console.log(response)
+        console.log(JSON.stringify(response));
 
         myApp.vue = new Vue({
           el:"#documents",
@@ -221,7 +221,7 @@
               myApp.client.refreshIfNeeded();
               let binary = myApp.request(url, { includeResponse: true })
                 .then(function(data){
-                  return data.body.json()
+                  return data.body
                 }).then(function(data){
 
                   let base64str = data.content;
@@ -240,7 +240,7 @@
 
                   let pdfWindow = window.open(url)
 
-                })
+                });
             }
           }
         })
