@@ -46,11 +46,11 @@
     <p id="debug"></p>
   </div>
 
-  <div id='existingNotes_section' class='hidden'>
+  <div id='existingNotes_section'>
     <hr>
   
     <h2>Existing Notes</h2>
-    <div id="documents">
+    <div id="documents" style="max-height: 80vh; overflow: scroll; max-width: 80%; margin: 0 auto;">
       <h3>Documents from yesterday and today</h3>
       <p v-for="item in $data.entry" v-html="item.resource.text.div" v-on:click="getBinary(item.resource.content[0].attachment.url, item.resource.content[0].attachment.contentType)">
       </p>
