@@ -66,12 +66,12 @@
     <h4>Clinical</h4>
     <div>
       <p>
-        <span class="label">patient id:</span> <span class="patient-demo">ID: <span id='patient_id'></span> (<span class="patient-name"></span>)</span><br>
+        <span class="label">patient id:</span> <span class="patient-demo" style="display: none">ID: <span id='patient_id'></span> (<span class="patient-name"></span>)</span><br>
         <span class="label">X-Request-Id:</span> <span id="patient-request-id"></span>
       </p>
       <p><span class="label">encounter id:</span> <span id='encounter_id'></span></p>
       <p>
-        <span class="label">fhirUser:</span> <span id='fhirUser'></span>
+        <span class="label">fhirUser:</span> <span class="practitioner-demo" style="display: none">ID: <span id='fhirUser'></span> (<span class="practitioner-name"></span>)</span><br>
         <span class="label">X-Request-Id:</span> <span id="practitioner-request-id"></span>
       </p>
 
@@ -178,20 +178,23 @@
   async function doRequests(){
 
     let patient_resource = await myApp.smart.patient.read({includeResponse: true}).then(function (response) {
-      document.getElementById('patient-request-id').innerText = response.headers.get('X-Request-Id');
-      document.getElementsByClassName('patient-name')[0].innerText = response.response.body.name[0].text;
-      document.getElementsByClassName('patient-demo')[0].innerText = response.headers.get('X-Request-Id');
+      document.getElementById('patient-request-id').innerText = response.response.headers.get('X-Request-Id');
+      document.getElementsByClassName('patient-name')[0].innerText = response.body.name[0].text;
+      document.getElementsByClassName('patient-demo')[0].style.display = 'block';
 
-      return response.response;
+      return response.body;
     });
 
+    let practitioner_resource = myApp.smart.user.read({includeResponse: true}).then(function(response) {
+      document.getElementById('practitioner-request-id').innerText = response.response.headers.get('X-Request-Id');
+      document.getElementsByClassName('practitioner-name')[0].innerText = response.body.name[0].text;
+      document.getElementsByClassName('practitioner-demo')[0].style.display = 'block';
 
-    let practitioner_response = myApp.smart.user.read({includeResponse: true});
-    let practitioner_resource = practitioner_response.response;
-    document.getElementById('practitioner-request-id').innerText = practitioner_response.headers.get('X-Request-Id');
+      return response.body;
+    })
 
-    console.log(patient_resource);
-    console.log(practitioner_resource);
+    console.log('pt: ' + patient_resource);
+    console.log('prsnl: ' + practitioner_resource);
 
     let docRefParams = new URLSearchParams();
     docRefParams.set("created","ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString());
