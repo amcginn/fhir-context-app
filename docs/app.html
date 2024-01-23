@@ -199,8 +199,8 @@
     let docRefParams = "created=ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() +
     "&created=le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString();
 
-    let docs = await myApp.smart.request("DocumentReference?patient=" + myApp.smart.patient.id + '&' +
-                                      encodeURI(docRefParams), { includeResponse: true })
+    let docs = await myApp.smart.request({ url: "DocumentReference?patient=" + myApp.smart.patient.id + '&' +
+                                      encodeURI(docRefParams), includeResponse: true })
       .then(function(response){
         let data = response.body;
         if (!response.response.ok) {
