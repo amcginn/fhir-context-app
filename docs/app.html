@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div id='debug_section' class='hidden>
+  <div id='debug_section' class='hidden'>
     <hr>
     <h3>Debug Area</h3>
     <p id="debug"></p>
@@ -66,7 +66,7 @@
     <h4>Clinical</h4>
     <div>
       <p>
-        <span class="label">patient id:</span> <span id='patient_id'></span><br>
+        <span class="label">patient id:</span> <span class="patient-demo">ID: <span id='patient_id'></span> (<span class="patient-name"></span>)</span><br>
         <span class="label">X-Request-Id:</span> <span id="patient-request-id"></span>
       </p>
       <p><span class="label">encounter id:</span> <span id='encounter_id'></span></p>
@@ -177,13 +177,18 @@
 
   async function doRequests(){
 
-    let patient_response = myApp.smart.patient.read({includeResponse: true});
-    let patient_resource = patient_response.response;
-    document.getElementById('patient-request-id').innerText = patient_response.headers.get('X-Request-Id');
+    let patient_resource = await myApp.smart.patient.read({includeResponse: true}).then(function (response) {
+      document.getElementById('patient-request-id').innerText = response.headers.get('X-Request-Id');
+      document.getElementsByClassName('patient-name')[0].innerText = response.response.body.name[0].text;
+      document.getElementsByClassName('patient-demo')[0].innerText = response.headers.get('X-Request-Id');
+
+      return response.response;
+    });
+
 
     let practitioner_response = myApp.smart.user.read({includeResponse: true});
     let practitioner_resource = practitioner_response.response;
-    document.getElementById('practitioner-request-id').innerText = patient_response.headers.get('X-Request-Id');
+    document.getElementById('practitioner-request-id').innerText = practitioner_response.headers.get('X-Request-Id');
 
     console.log(patient_resource);
     console.log(practitioner_resource);
@@ -192,10 +197,12 @@
     docRefParams.set("created","ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString());
     docRefParams.set("created", "le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
 
-    let docs = await myApp.smart.patient.request("DocumentReference", docRefParams).then(function(data){
+    let docs = myApp.smart.patient.request("DocumentReference", { includeResponse: true, ...docRefParams })
+      .then(function(response){
+        let data = response.response;
         if (!data.ok) {
           console.log()
-          console.log('/DocumentReference x-request-id: ' + data.headers.get('X-Request-Id'));
+          console.log('/DocumentReference x-request-id: ' + response.headers.get('X-Request-Id'));
         }
         return data
     });
