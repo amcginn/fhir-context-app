@@ -208,44 +208,43 @@
           console.log('/DocumentReference x-request-id: ' + response.response.headers.get('X-Request-Id'));
         }
         return data
-    });
+      }).then(function(docs){
+        let response = docs.json();
 
-    let response = await docs.json()
+        console.log(response)
 
-    console.log(response)
+        myApp.vue = new Vue({
+          el:"#documents",
+          data: response,
+          methods: {
+            getBinary: function(url){
+              myApp.client.refreshIfNeeded();
+              let binary = myApp.request(url, { includeResponse: true })
+                .then(function(data){
+                  return data.body.json()
+                }).then(function(data){
 
-    myApp.vue = new Vue({
-      el:"#documents",
-      data: response,
-      methods: {
-        getBinary: function(url){
-          myApp.client.refreshIfNeeded();
-          let binary = myApp.request(url, { includeResponse: true })
-            .then(function(data){
-              return data.body.json()
-            }).then(function(data){
+                  let base64str = data.content;
+                  // decode base64 string, remove space for IE compatibility
+                  let binary = atob(base64str.replace(/\s/g, ''));
+                  const byteNumbers = new Array(binary.length);
+                  for (let i = 0; i < binary.length; i++) {
+                    byteNumbers[i] = binary.charCodeAt(i);
+                  }
+                  const byteArray = new Uint8Array(byteNumbers);
 
-             let base64str = data.content;
-              // decode base64 string, remove space for IE compatibility
-              let binary = atob(base64str.replace(/\s/g, ''));
-              const byteNumbers = new Array(binary.length);
-              for (let i = 0; i < binary.length; i++) {
-                byteNumbers[i] = binary.charCodeAt(i);
-              }
-              const byteArray = new Uint8Array(byteNumbers);
+                  // create the blob object with content-type "application/pdf"
+                  let blob = new Blob( [byteArray], { type: "application/pdf" });
+                  let url = URL.createObjectURL(blob);
+                  console.log(url)
 
-              // create the blob object with content-type "application/pdf"
-              let blob = new Blob( [byteArray], { type: "application/pdf" });
-              let url = URL.createObjectURL(blob);
-              console.log(url)
+                  let pdfWindow = window.open(url)
 
-              let pdfWindow = window.open(url)
-
-          })
-
-        }
-      }
-    })
+                })
+            }
+          }
+        })
+      });
   }
 
   $(document).ready(function(){
