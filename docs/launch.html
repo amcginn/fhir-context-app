@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html hidden lang="">
+<html hidden lang="en">
 
 <head>
   <script src='dist/fhir-client-v2.js'></script>
@@ -47,16 +47,19 @@
     
   </script>
   <script>
-    console.log(JSON.stringify(FHIR.oauth2));
-  </script>
-  <script>
+
     let auth_req_info = {
         'client_id': '11d9d61d-1d47-44a1-983a-56e70996298c',
         'scope': 'patient/Patient.read patient/DocumentReference.read patient/DocumentReference.write patient/Binary.read patient/AllergyIntolerance.write openid fhirUser online_access launch',
         'redirect_uri': 'https://amcginn.github.io/fhir-context-app/app.html'
-      }
-    
-    FHIR.oauth2.authorize(auth_req_info);
+    }
+
+    console.log('wait 5 seconds')
+    setTimeout(function () {
+      console.log('calling auth')
+      console.log(FHIR.oauth2.authorize(auth_req_info));
+    }, 5000);
+
   </script>
 
   <script type="text/javascript" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>

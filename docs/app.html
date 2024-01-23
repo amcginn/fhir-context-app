@@ -65,9 +65,16 @@
     <h3>Current</h3>
     <h4>Clinical</h4>
     <div>
-      <p><span class="label">patient id:</span> <span id='patient_id'></span></p>
+      <p>
+        <span class="label">patient id:</span> <span id='patient_id'></span><br>
+        <span class="label">X-Request-Id:</span> <span id="patient-request-id"></span>
+      </p>
       <p><span class="label">encounter id:</span> <span id='encounter_id'></span></p>
-      <p><span class="label">fhirUser:</span> <span id='fhirUser'></span></p>
+      <p>
+        <span class="label">fhirUser:</span> <span id='fhirUser'></span>
+        <span class="label">X-Request-Id:</span> <span id="practitioner-request-id"></span>
+      </p>
+
     </div>
     <h4>State</h4>
     <div>
@@ -156,78 +163,83 @@
   </script>
   <script>
 
-  var myApp = {}
+  let myApp = {}
 
-    FHIR.oauth2.ready()
-    .then(function(client){ 
-      myApp.smart = client
-      
-      console.log(myApp);
-      populateState(myApp.smart)
-      
-      doRequests()
-    })
+  FHIR.oauth2.ready()
+  .then(function(client){
+    myApp.smart = client
 
-    async function doRequests(){
+    console.log(myApp);
+    populateState(myApp.smart)
 
-      let patient_resource = myApp.smart.patient.read();
-      let practitioner_resource = myApp.smart.user.read()
-      console.log(patient_resource);
-      console.log(practitioner_resource);
-      
-      var docs = await fetch(myApp.smart.state.serverUrl+"/DocumentReference?patient="+myApp.smart.patient.id+"&created=ge"+moment().subtract(1,"days").format("YYYY-MM-DD")+"&created=le"+moment().add(1,"days").format("YYYY-MM-DD"),{
-        headers:{  
-          "Accept":"application/json+fhir",
-          "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+    doRequests()
+  })
+
+  async function doRequests(){
+
+    let patient_response = myApp.smart.patient.read({includeResponse: true});
+    let patient_resource = patient_response.response;
+    document.getElementById('patient-request-id').innerText = patient_response.headers.get('X-Request-Id');
+
+    let practitioner_response = myApp.smart.user.read({includeResponse: true});
+    let practitioner_resource = practitioner_response.response;
+    document.getElementById('practitioner-request-id').innerText = patient_response.headers.get('X-Request-Id');
+
+    console.log(patient_resource);
+    console.log(practitioner_resource);
+
+    let docRefParams = new URLSearchParams();
+    docRefParams.set("created","ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString());
+    docRefParams.set("created", "le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
+
+    let docs = await myApp.smart.patient.request("DocumentReference", docRefParams).then(function(data){
+        if (!data.ok) {
+          console.log()
+          console.log('/DocumentReference x-request-id: ' + data.headers.get('X-Request-Id'));
         }
-        }).then(function(data){
-          if (!data.ok) {
-            console.log()
-            console.log('/DocumentReference x-request-id: ' + data.headers.get('X-Request-Id'));
-          }
-          return data
-      })
+        return data
+    });
 
-      var response = await docs.json()
+    let response = await docs.json()
 
-      console.log(response)
+    console.log(response)
 
-      myApp.vue = new Vue({
-        el:"#documents",
-        data: response,
-        methods: {
-          getBinary: function(url, contentType){
-            var binary = fetch(url, {
-              headers:{  
-                "Accept":"application/json+fhir",
-                "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+    myApp.vue = new Vue({
+      el:"#documents",
+      data: response,
+      methods: {
+        getBinary: function(url, contentType){
+          var binary = fetch(url, {
+            headers:{
+              "Accept":"application/json+fhir",
+              "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
+            }
+            }).then(function(data){
+              return data.json()
+            }).then(function(data){
+
+             var base64str = data.content;
+              // decode base64 string, remove space for IE compatibility
+              var binary = atob(base64str.replace(/\s/g, ''));
+              const byteNumbers = new Array(binary.length);
+              for (let i = 0; i < binary.length; i++) {
+                byteNumbers[i] = binary.charCodeAt(i);
               }
-              }).then(function(data){
-                return data.json()
-              }).then(function(data){
+              const byteArray = new Uint8Array(byteNumbers);
 
-               var base64str = data.content;
-                // decode base64 string, remove space for IE compatibility
-                var binary = atob(base64str.replace(/\s/g, ''));
-                const byteNumbers = new Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                  byteNumbers[i] = binary.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
+              // create the blob object with content-type "application/pdf"
+              var blob = new Blob( [byteArray], { type: "application/pdf" });
+              var url = URL.createObjectURL(blob);
+              console.log(url)
 
-                // create the blob object with content-type "application/pdf"
-                var blob = new Blob( [byteArray], { type: "application/pdf" });
-                var url = URL.createObjectURL(blob);
-                console.log(url)
+              let pdfWindow = window.open(url)
 
-                let pdfWindow = window.open(url)
+          })
 
-            })
-
-          }
         }
-      })
-    }
+      }
+    })
+  }
 
   $(document).ready(function(){
     $("body").on("click", "#submit", function(){
