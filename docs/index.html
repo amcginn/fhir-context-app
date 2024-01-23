@@ -1,48 +1,94 @@
 <!DOCTYPE html>
-<html>
-<head>
-</head>
+<html lang="en">
+  <head>
+    <title>SMART launch context app</title>
+  </head>
 
-<body>
-  <a id="standalone-url" href="">If you want to login outside the EHR, login here!</a>
-  <p>
-    <div>
-      <span>Current location: </span><span id="current_url"></span><br/>
-      <span>No current context</span>
+  <body>
+    <div style="margin: 2rem;">
+      <div style="margin: 10px 0;">
+        <label for="domain-username">Domain username</label>
+        <input id="domain-username" value="portal"><br>
+        <em>The 'portal' username (pw: portal) is used by default</em>
+      </div>
+      <div>
+        <label for="pt-select">Choose a patient:</label>
+        <select id="pt-select">
+          <option value="12724066" selected>Nancy SMART</option>
+          <option value="12724067">Joe SMART</option>
+          <option value="12724065">Wilma SMART</option>
+          <option value="12724071">Valerie SMART</option>
+          <option value="12724070">Frederick SMART</option>
+          <option value="12724067">Timmy SMART</option>
+          <option value="12724068">Hailey SMART</option>
+          <option value="12742399">Sandy SMART</option>
+          <option value="12742397">BabyBoy SMART</option>
+          <option value="12742400">Tim Peters</option>
+        </select>
+        <div id="selected-encounter"></div>
+      </div>
+      <button id="launch-btn" style="font-size: large; margin: 2rem">Launch!</button>
+
+      <br>
+      <div>
+        <span>Current location: </span><span id="current_url"></span><br/>
+        <span>No current context</span>
+        <p>
+          <a href="https://authorization.cerner.com/session-api/log-out" target="_blank" style="font-size: xx-small;">Reset user session</a>
+        </p>
+      </div>
     </div>
-  </p>
-  <p>
-    <div>
-      <label for="pt-select">Choose a patient:</label>
-      <select id="pt-select">
-        <option value="12724066" selected>Nancy SMART</option>
-        <option value="12724067">Joe SMART</option>
-        <option value="12724065">Wilma SMART</option>
-        <option value="12724071">Valerie SMART</option>
-        <option value="12724070">Frederick SMART</option>
-        <option value="490052523">Tim Peters</option>
-    </select>
-    </div>
-  </p>
-</body>
-<script>
-  document.getElementById('current_url').innerText = window.location.href
-</script>
+  </body>
   <script>
-    const launch_server_url = 'https://smart.cerner.com/smart/ec2458f2-1e24-41c8-b71b-0e701af7583d/apps/ae713322-7206-45cd-be6f-08f01fdcedb6/?username=portal&PAT_PersonId='
-    
+    document.getElementById('current_url').innerText = window.location.href
+  </script>
+  <script>
+    const launch_server_url = 'https://smart.cerner.com/smart/ec2458f2-1e24-41c8-b71b-0e701af7583d/apps/ae713322-' +
+        '7206-45cd-be6f-08f01fdcedb6/?username={username}&PAT_PersonId={patient_id}&VIS_EncntrId={encntr_id}'
+    const ptEncntrs = new Map();
+    ptEncntrs.set('12724066', '97953477');
+    ptEncntrs.set('12724067', '97953480');
+    ptEncntrs.set('12724065', '97953483');
+    ptEncntrs.set('12724071', '97953486');
+    ptEncntrs.set('12724070', '97953489');
+    ptEncntrs.set('12724069', '97953492');
+    ptEncntrs.set('12724068', '97953495');
+    ptEncntrs.set('12742399', '97953523');
+    ptEncntrs.set('12742397', '97953504');
+    ptEncntrs.set('12742400', '97953530');
+
+    const username = 'portal';
+
     function changePatient(patient_id) {
-      let standalone_url_element = document.getElementById('standalone-url');
-      standalone_url_element.href = launch_server_url + patient_id;
+      document.getElementById('selected-encounter').innerText = 'Encounter: ' + ptEncntrs.get(patient_id);
       console.log('patient changed to ' + patient_id);
     }
-    
+
+    function launchApp() {
+      let usernameInput = document.getElementById('domain-username').value;
+      const usernameRex = /^[A-Za-z0-9]+$/
+      let loginUsername = usernameRex.test(usernameInput) ? usernameInput : username;
+
+      let patient_id = document.getElementById('pt-select').value;
+      window.location.href = launch_server_url.replace('{username}', loginUsername).replace('{patient_id}', patient_id)
+        .replace('{encntr_id', ptEncntrs.get(patient_id));
+    }
+
+    document.getElementById("launch-btn").addEventListener("click", function () {
+      launchApp();
+    });
+
+    document.getElementById('domain-username').addEventListener("keydown", function (e) {
+      if (e.code === "Enter") {
+        launchApp()
+      }
+    });
+
     const el = document.getElementById("pt-select");
-    el.addEventListener("change",
-      function () {
-        var test_patient = document.getElementById("pt-select").value;
-        changePatient(test_patient);
-      });
+    el.addEventListener("change", function () {
+      let test_patient = document.getElementById("pt-select").value;
+      changePatient(test_patient);
+    });
     
     changePatient(el.value);
   </script>
