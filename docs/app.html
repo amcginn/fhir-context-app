@@ -200,12 +200,12 @@
     docRefParams.set("created","ge" + new Date(new Date().setDate(new Date().getDate() - 1)).toISOString());
     docRefParams.set("created", "le"+ new Date(new Date().setDate(new Date().getDate() + 1)).toISOString());
 
-    let docs = myApp.smart.patient.request("DocumentReference", { includeResponse: true, ...docRefParams })
+    let docs = myApp.smart.request("DocumentReference?patient=" + myApp.smart.patient.id + docRefParams.toString(), {includeResponse: true})
       .then(function(response){
-        let data = response.response;
-        if (!data.ok) {
+        let data = response.body;
+        if (!response.response.ok) {
           console.log()
-          console.log('/DocumentReference x-request-id: ' + response.headers.get('X-Request-Id'));
+          console.log('/DocumentReference x-request-id: ' + response.response.headers.get('X-Request-Id'));
         }
         return data
     });
@@ -218,19 +218,16 @@
       el:"#documents",
       data: response,
       methods: {
-        getBinary: function(url, contentType){
-          var binary = fetch(url, {
-            headers:{
-              "Accept":"application/json+fhir",
-              "Authorization":"Bearer "+myApp.smart.state.tokenResponse.access_token
-            }
-            }).then(function(data){
-              return data.json()
+        getBinary: function(url){
+          myApp.client.refreshIfNeeded();
+          let binary = myApp.request(url, { includeResponse: true })
+            .then(function(data){
+              return data.body.json()
             }).then(function(data){
 
-             var base64str = data.content;
+             let base64str = data.content;
               // decode base64 string, remove space for IE compatibility
-              var binary = atob(base64str.replace(/\s/g, ''));
+              let binary = atob(base64str.replace(/\s/g, ''));
               const byteNumbers = new Array(binary.length);
               for (let i = 0; i < binary.length; i++) {
                 byteNumbers[i] = binary.charCodeAt(i);
@@ -238,8 +235,8 @@
               const byteArray = new Uint8Array(byteNumbers);
 
               // create the blob object with content-type "application/pdf"
-              var blob = new Blob( [byteArray], { type: "application/pdf" });
-              var url = URL.createObjectURL(blob);
+              let blob = new Blob( [byteArray], { type: "application/pdf" });
+              let url = URL.createObjectURL(blob);
               console.log(url)
 
               let pdfWindow = window.open(url)
@@ -304,6 +301,7 @@
       }),
       crossDomain: true,
       beforeSend: function(xhr){
+        myApp.client.refreshIfNeeded();
         xhr.setRequestHeader('Content-Type', 'application/json+fhir'); 
         xhr.setRequestHeader('Authorization', 'Bearer '+myApp.smart.state.tokenResponse.access_token)     
       },
